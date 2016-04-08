@@ -18,11 +18,9 @@ parser.add_argument('-o', '--outputfile',
                     type=argparse.FileType('w'), 
                     help='output file, in txt format')
 
-
-# ###### Reading the arguments and dealing with the 'outputfile'
-
-# In[3]:
-
+####========================================================
+#### Reading the arguments and dealing with the 'outputfile'
+####========================================================
 args = parser.parse_args()
 #args = parser.parse_args(['-i', 'prod-anon-001.pcap']) #example to test
 inputfile = args.inputfile
@@ -35,14 +33,12 @@ else:
 
 # ###### Loading the 'inputfile' as a pcap file, via dpkt library.
 
-# In[4]:
-
 pcapfile = dpkt.pcap.Reader(inputfile)
 
 
-# ###### Reading and Printing in the 'outputfile' the 33 information about the pcap file (in the same order as the output of packetpig)
-
-# In[5]:
+####========================================================
+#### Reading and Printing in the 'outputfile' the 33 information about the pcap file (in the same order as the output of packetpig)
+####========================================================
 
 for ts, buf in pcapfile:
     eth = dpkt.ethernet.Ethernet(buf)
