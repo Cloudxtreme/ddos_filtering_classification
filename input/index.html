@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<h1 align="center">DDoS Filtering Tool</h1>
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+        Select a network file (.pcap, .pcap[ng], .nfdump), which contains a DDoS attack to analyse:
+        <input type="file" name="fileToUpload" id="fileToUpload" />
+        <br><br>
+        <input type="submit" name="submit" value="Start Analysis" disabled />
+    </form>
+	
+</body>
+
+
+<script type="text/javascript" src="libs/jquery-1.12.2.js"></script>
+
+<script type="text/javascript">
+$(document).ready(
+    function(){
+        $('input:file').change(
+            function(){
+                if ($(this).val()) {
+                    $('input:submit').attr('disabled',false);
+                } 
+            }
+            );
+    });
+</script>
+
+</html>
