@@ -4,6 +4,17 @@
 \usepackage{graphicx}
 \usepackage{subfigure,dblfloatfix} %to fix the problem of [h!] [t!] [!b]
 
+% For TABLES: (1) columns with predefined width (2) to make colored cells
+\usepackage{array} 
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage[]{colortbl}
+
+\usepackage{bbding}
+\usepackage{pifont}
+\usepackage{wasysym}
+\usepackage{amssymb}
 
 \begin{document}
 
@@ -65,7 +76,69 @@ The steps needed to achieve the main requirement are the following:
 \label{fig:modules} 
 \end{figure}
 
+
+\begin{table}[h!] \small \center \caption{Attack information shared by
+initiative.}
+\label{tab:attack_fields} \begin{tabular}{|c| l | c |c|c|c|c|c|} \hline
+&\textbf{Information}      & \textbf{Obtained}&\cite{digitalattackmap2013web} &
+\cite{norse2015web}& \cite{ipew2015web}  & \cite{fireeye2015web} &
+\cite{kaspersky2015web2}\\ \hline
+
+1&Start time 	&field&  $\checkmark$	& $\checkmark$	& ~
+& ~ & ~    \\ \hline    
+2&Duration 		&field*& $\checkmark$	& ~ & ~
+& ~ & ~   \\ \hline 
+3&Max bit rate	&field*& $\checkmark$	& ~ & ~ & ~ & ~
+\\ \hline 
+4&Src.  port 		&field& $\checkmark$	& ~ & ~ & ~ & ~   \\\hline 
+5&Dst.  port &field& $\checkmark$	& $\checkmark$	& ~ & ~ & $\checkmark$
+\\ \hline 
+6&Attack type&heuristic& $\checkmark$ & $\checkmark$	&
+$\checkmark$ &~ & $\checkmark$    \\ \hline \hline\hline 
+7&Src.  IP &field& ~ &
+$\checkmark$ & $\checkmark$& ~ & ~    \\ \hline 
+8&Src. IP country	&enrich&
+$\checkmark$ & $\checkmark$ & $\checkmark$& $\checkmark$ & $\checkmark$   \\
+\hline    
+9&Src.  IP city &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\  \hline
+10&Src. IP ASN &enrich& ~ & $\checkmark$	& ~ & ~ & ~ \\ \hline \hline\hline
+\rowcolor{red}11&Dst.  IP &field& ~ & ~ & $\checkmark$& ~ & ~ \\\hline
+12&Dst. IP country&enrich& $\checkmark$ & $\checkmark$	& $\checkmark$& $\checkmark$ & ~
+\\ \hline \rowcolor{red}13&Dst. IP City &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\
+\hline \rowcolor{red}14&Dst. IP ASN &enrich& ~ & $\checkmark$ & ~ & ~ & ~ \\ \hline
+\end{tabular} \end{table}
+
+\begin{table}[h!] \small \center \caption{Missing attack information.}
+\label{tab:missing_info} \begin{tabular}{| c | l |c|} \hline
+&\textbf{Information}     & \textbf{Obtained}\\ 
+\hline 
+1& Packet peak rate & field*\\ \hline
+2&\# Src. IPs &field*\\\hline	
+3&\# restricted Src. IPs & enrich \\\hline 
+4&\# Src. IPs with fragm. & field \\\hline
+5&Attack responsible (blame)& manual\\\hline
+\hline\hline
+6&Src. IP \# total packets&field\\ \hline
+7&Src. IP \# frag. packets  &field\\ \hline 
+8&Src. IP data rate & field*\\ \hline
+9&Src. IP packet rate & field* \\ \hline
+%10&Src. IP traffic duration& field* \\\hline
+10&Src. IP restricted?  &enrich \\ \hline 
+11&Src. IP packet length &field \\ \hline 
+12&Src. IP TTL  &field \\ \hline
+\rowcolor{yellow}13&Src. IP TCP flags &field \\ \hline 
+\rowcolor{yellow}15&Src. IP HTTP payload* & field\\ \hline
+\rowcolor{yellow}14&Src. IP DNS query  & field\\ \hline 
+\rowcolor{yellow}16&Src. IP open ports &enrich\\ \hline 
+
+\end{tabular}
+\end{table}
+
+
 Web-based that performs offline filtering;
+
+
+
 
 \section{Preliminary results}
 \end{document}
