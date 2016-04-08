@@ -1,19 +1,32 @@
 <!DOCTYPE html>
 <html>
+<head>
+<link rel="stylesheet" type="text/css" media="screen"
+	href="style/concise.min.css" />
+<link rel="stylesheet" type="text/css" media="screen"
+	href="style/input.css" />
+<script type="text/javascript" src="js/input.js"></script>
+</head>
 <body>
+	<main container="" class="siteContent">
 	<h1 align="center">DDoS Filtering Tool</h1>
-    <form action="upload.php" method="post" enctype="multipart/form-data">
+    <form action="upload.php" method="POST" enctype="multipart/form-data">
         Select a network file (.pcap, .pcap[ng], .nfdump), which contains a DDoS attack to analyse:
         <input type="file" name="fileToUpload" id="fileToUpload" />
         <br><br>
-        <input type="submit" name="submit" value="Start Analysis" disabled />
+        <input type="submit" name="submit" class="btn bg-small" value="Start Analysis" disabled />
     </form>
-	
+	<div id="responsefield">
+	</div>
+	</main>
+	<footer container="" class="siteFooter">
+    <p>Copyright &#169; 2015 by Jair Santanna</p>
+ </footer>
 </body>
 
 
 <script type="text/javascript" src="libs/jquery-1.12.2.js"></script>
-
+<script type="text/javascript" src="js/input.js"></script>
 <script type="text/javascript">
 $(document).ready(
     function(){
@@ -22,8 +35,14 @@ $(document).ready(
                 if ($(this).val()) {
                     $('input:submit').attr('disabled',false);
                 } 
-            }
-            );
+				if(getExt($('#fileToUpload')[0].files[0].name) == "pcapng" || getExt($('#fileToUpload')[0].files[0].name) == "pcap" || getExt($('#fileToUpload')[0].files[0].name) == "nfdump") {
+						 $('input:submit').attr('disabled',false);
+						 $('#responsefield').html("You can now start the analysis.");
+						 } else {
+						 $('input:submit').attr('disabled',true);
+						 $('#responsefield').html("Please upload a .pcap, a .pcapng or a .nfdump file.");
+						 }
+            });
     });
 </script>
 
