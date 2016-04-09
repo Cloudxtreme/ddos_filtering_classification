@@ -22,7 +22,7 @@
 
 \author{Jos\'e Jair Santanna \and Julik Keijer}
 \institute{University of Twente, the Netherlands\\
-\email{j.j.santanna@utwente.nl \& keijerjs@gmail.com},\\ 
+\email{j.j.santanna@utwente.nl,keijerjs@gmail.com}\\ 
 \texttt{http://ddosdb.org/ddosfiltering}}
 \maketitle             
 
@@ -35,11 +35,13 @@ Process a large volume of data ``at home''.
 \section{Collaborators Requirement}
 
 \noindent
-\textsc{Main requirement:} 
+\textsc{Main requirements:} 
 \begin{itemize}
-	\item Facilitate the removing of any private information that can be potentially used for identifying either the collaborators or their clients;
-	\item Generate a summary of the attack and the IP addresses that are involved in the attack;
-	\item Generate a new network file with only the attack records.
+	\item Facilitate the removal of any private information that can be potentially used for identifying either the collaborators or their clients;
+	\item Generate a summary information of source IP addresses that were potentially involved in the attack;
+	\item Use the summary information of source IP addresses to classify the attack type;
+	\item Generate a summary of the attack; 
+	\item Generate a new network file with only the filtered IP addresses attack records.
 \end{itemize}
 
 \noindent
@@ -53,9 +55,9 @@ Process a large volume of data ``at home''.
 	\item Highlight outliers.
 \end{itemize}
 
-\section{Tasks \& Modules}
+\section{Tasks \& Design Decisions}
 
-The steps needed to achieve the main requirement are the following:
+The achieve the majority of the requirements of collaborators we identify the following tasks:
 \begin{enumerate}
 	\item Receive an uploaded network file that contains a DDoS attack (pcap[ng] or nfdump types);	
 	\item Pre-filter the uploaded network file keeping only the ingress traffic;
@@ -70,14 +72,24 @@ The steps needed to achieve the main requirement are the following:
 	\item[11.] Export the new network attack file and the summary of the attack to DDoSDB.
 \end{enumerate}
 
+We decided to split the tasks in five main modules, depicted in Fig~\ref{fig:modules}: (i) \textsf{input}, (ii) \textsf{processing}, (iii) \textsf{visualization}, (iv) \textsf{classification}, and (v) \textsf{output}. Additionally, we include an extra module named \textsf{conversion} to optimize the \textsf{processing module}. Each module is detailed in the further subsections.
+
 \begin{figure}[!ht] 
 \centering 
-\includegraphics[]{figs/modules.pdf}
+\includegraphics[]{figs/framework.pdf}
 \caption{DDoS filtering tool modules.} 
 \label{fig:modules} 
 \end{figure}
 
+\subsection{Input Module}
+%objective
+\subsubsection{Requirements}
+\subsubsection{Design decisions}
 
+\subsection{Conversion \& Prefiltering Module}
+%objective: filter the input file and keep only required fields
+\subsubsection{Requirements}
+\subsubsection{Design decisions}
 \begin{table}[h!] 
 \small 
 \center 
@@ -92,40 +104,59 @@ The steps needed to achieve the main requirement are the following:
 
 1&Start time 	&field&  $\checkmark$	& $\checkmark$	& ~& ~ & ~    \\ \hline    
 2&Duration 		&field*& $\checkmark$	& ~ & ~& ~ & ~   \\ \hline 
-3&Max bit rate	&field*& $\checkmark$	& ~ & ~ & ~ & ~\\ \hline 
-1& Packet peak rate & field*&&&&&\\ \hline
-2&\# Src. IPs &field*&&&&&\\\hline	
-3&\# restricted Src. IPs & enrich &&&&&\\\hline 
-4&\# Src. IPs with fragm. & field&&&&& \\\hline
-4&Src.  port 		&field& $\checkmark$	& ~ & ~ & ~ & ~   \\\hline 
-5&Dst.  port &field& $\checkmark$	& $\checkmark$	& ~ & ~ & $\checkmark$\\ \hline 
-6&Attack type&heuristic& $\checkmark$ & $\checkmark$	& $\checkmark$ &~ & $\checkmark$    \\ \hline 
-5&Attack responsible (blame)& manual&&&&&\\\hline\hline\hline
+3& Bit rate (peak)	&field*& $\checkmark$	& ~ & ~ & ~ & ~\\ \hline 
+4& Packet rate (peak) & field*&&&&&\\ \hline
+5&\# Src. IPs &field*&&&&&\\\hline	
+6&\# restricted Src. IPs & enrich &&&&&\\\hline 
+7&\# Src. IPs with fragm. & field&&&&& \\\hline
+8&Src.  port (interval)	&field& $\checkmark$	& ~ & ~ & ~ & ~   \\\hline 
+9&Dst.  port (interval) &field& $\checkmark$	& $\checkmark$	& ~ & ~ & $\checkmark$\\ \hline 
+10&Attack type&heuristic& $\checkmark$ & $\checkmark$	& $\checkmark$ &~ & $\checkmark$    \\ \hline 
+11&+Spoofed attack type?&heuristic& &&&&\\ \hline 
+12&+Fragmented attack type?&heuristic& &&&&\\ \hline 
+13&+Reflected attack type?&heuristic& &&&&\\ \hline 
+14&Attack responsible (blame)& manual&&&&&\\\hline\hline\hline
 
-\rowcolor{red}11&Dst.  IP &field& ~ & ~ & $\checkmark$& ~ & ~ \\\hline
-12&Dst. IP country&enrich& $\checkmark$ & $\checkmark$	& $\checkmark$& $\checkmark$ & ~ \\ \hline 
-\rowcolor{red}13&Dst. IP City &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\\hline 
-\rowcolor{red}14&Dst. IP ASN &enrich& ~ & $\checkmark$ & ~ & ~ & ~ \\ \hline\hline\hline
+\rowcolor{red}15&Dst.  IP &field& ~ & ~ & $\checkmark$& ~ & ~ \\\hline
+16&Dst. IP country&enrich& $\checkmark$ & $\checkmark$	& $\checkmark$& $\checkmark$ & ~ \\ \hline 
+\rowcolor{red}17&Dst. IP City &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\\hline 
+\rowcolor{red}18&Dst. IP ASN &enrich& ~ & $\checkmark$ & ~ & ~ & ~ \\ \hline\hline\hline
 
-7&Src.  IP &field& ~ &$\checkmark$ & $\checkmark$& ~ & ~    \\ \hline 
-8&Src. IP country	&enrich&$\checkmark$ & $\checkmark$ & $\checkmark$& $\checkmark$ & $\checkmark$   \\
+19&Src.  IP &field& ~ &$\checkmark$ & $\checkmark$& ~ & ~    \\ \hline 
+20&Src. IP country	&enrich&$\checkmark$ & $\checkmark$ & $\checkmark$& $\checkmark$ & $\checkmark$   \\
 \hline    
-9&Src.  IP city &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\  \hline
-10&Src. IP ASN &enrich& ~ & $\checkmark$	& ~ & ~ & ~ \\ \hline 
-6&Src. IP \# total packets&field&&&&&\\ \hline
-7&Src. IP \# frag. packets  &field&&&&&\\ \hline 
-8&Src. IP data rate & field*&&&&&\\ \hline
-9&Src. IP packet rate & field* &&&&&\\ \hline
-10&Src. IP restricted?  &enrich&&&&& \\ \hline 
-11&Src. IP packet length &field &&&&&\\ \hline 
-12&Src. IP TTL  &field &&&&&\\ \hline
-\rowcolor{yellow}13&Src. IP TCP flags &field &&&&&\\ \hline 
-\rowcolor{yellow}15&Src. IP HTTP payload* & field&&&&&\\ \hline
-\rowcolor{yellow}14&Src. IP DNS query  & field&&&&&\\ \hline 
-\rowcolor{yellow}16&Src. IP open ports &enrich&&&&&\\ \hline 
+21&Src.  IP city &enrich& ~ & $\checkmark$	& ~ & ~ & ~   \\  \hline
+22&Src. IP ASN &enrich& ~ & $\checkmark$	& ~ & ~ & ~ \\ \hline 
+23&Src. IP \# total packets&field&&&&&\\ \hline
+24&Src. IP \# frag. packets  &field&&&&&\\ \hline 
+25&Src. IP data rate & field*&&&&&\\ \hline
+26&Src. IP packet rate & field* &&&&&\\ \hline
+27&Src. IP restricted?  &enrich&&&&& \\ \hline 
+28&Src. IP packet length &field &&&&&\\ \hline 
+29&Src. IP TTL  &field &&&&&\\ \hline
+\rowcolor{yellow}30&Src. IP TCP flags &field &&&&&\\ \hline 
+\rowcolor{yellow}31&Src. IP HTTP payload* & field&&&&&\\ \hline
+\rowcolor{yellow}32&Src. IP DNS query  & field&&&&&\\ \hline 
+\rowcolor{yellow}33&Src. IP open ports &enrich&&&&&\\ \hline 
 
 \end{tabular} 
 \end{table}
+
+
+\subsection{Processing and Visualization Module}
+%objective
+\subsubsection{Requirements}
+\subsubsection{Design decisions}
+
+\subsection{Classification Module}
+%objective
+\subsubsection{Requirements}
+\subsubsection{Design decisions}
+
+\subsection{Output Module}
+%objective
+\subsubsection{Requirements}
+\subsubsection{Design decisions}
 
 
 
