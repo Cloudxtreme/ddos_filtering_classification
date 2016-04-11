@@ -61,11 +61,13 @@ for ts, buf in pcapfile:
         ip_checksum = ip.sum #11
         ip_src  = socket.inet_ntoa(ip.src) #12
         ip_dst  = socket.inet_ntoa(ip.dst) #13
-        
+        try: sport = proto.sport #14
+        except: sport = "NONE"
+        try: dport = proto.dport #15
+        except: dport = "NONE"
+
         if ip.p == 6 :
             try:
-                tcp_sport = (proto.sport if ip.p == 6 else 0) #14
-                tcp_dport = (proto.dport if ip.p == 6 else 0) #15
                 tcp_seq_id = (proto.flags if ip.p == 6 else 0) #16
                 tcp_ack_id = (proto.ack if ip.p == 6 else 0) #17
                 tcp_offset = (proto.off if ip.p == 6 else 0) #18
@@ -80,15 +82,11 @@ for ts, buf in pcapfile:
                 tcp_fin = (int(( proto.flags & dpkt.tcp.TH_FIN ) != 0) if ip.p == 6 else 0) #27
                 tcp_window = (proto.win if ip.p == 6 else 0) #28
                 tcp_len = (len(proto.data) if ip.p == 6 else 0) #29
-                udp_sport = "NONE" #30
-                udp_dport = "NONE" #31
                 udp_len = "NONE" #32
                 udp_checksum = "NONE" #33
             except:
                 print "EXCEPTION TCP"
         elif ip.p == 17:
-                tcp_sport = "NONE" #14
-                tcp_dport = "NONE" #15
                 tcp_seq_id = "NONE" #16
                 tcp_ack_id = "NONE" #17
                 tcp_offset = "NONE" #18
@@ -103,18 +101,11 @@ for ts, buf in pcapfile:
                 tcp_fin = "NONE" #27
                 tcp_window = "NONE" #28
                 tcp_len = "NONE" #29
-                try: udp_sport = proto.sport 
-                except: udp_sport = "blah"#30
-                try: udp_dport = proto.dport 
-                except: udp_dport = "blah"#31
                 try: udp_len = proto.ulen #32
                 except: udp_len = "blah"
                 try: udp_checksum = proto.sum #33
                 except: udp_checksum = "NONE"
-
         elif ip.p == 1:
-            tcp_sport = "NONE" #14
-            tcp_dport = "NONE" #15
             tcp_seq_id = "NONE" #16
             tcp_ack_id = "NONE" #17
             tcp_offset = "NONE" #18
@@ -129,12 +120,10 @@ for ts, buf in pcapfile:
             tcp_fin = "NONE" #27
             tcp_window = "NONE" #28
             tcp_len = "NONE" #29
-            udp_sport = "NONE" #30
-            udp_dport = "NONE" #31
             udp_len = "NONE" #32
             udp_checksum = proto.sum #33
 
-        print >> outputfile,ts,ip_version,ip_header_length,ip_tos,ip_total_length,ip_id,ip_flags,more_fragments,ip_ttl,ip_proto,ip_checksum,ip_src,ip_dst,tcp_sport,tcp_dport,tcp_seq_id,tcp_ack_id,tcp_offset,tcp_ns,tcp_cwr,tcp_ece,tcp_urg,tcp_ack,tcp_psh,tcp_rst,tcp_syn,tcp_fin,tcp_window,tcp_len,udp_sport, udp_dport,udp_len,udp_checksum
+        print >> outputfile,ts,ip_version,ip_header_length,ip_tos,ip_total_length,ip_id,ip_flags,more_fragments,ip_ttl,ip_proto,ip_checksum,ip_src,ip_dst,sport,dport,tcp_seq_id,tcp_ack_id,tcp_offset,tcp_ns,tcp_cwr,tcp_ece,tcp_urg,tcp_ack,tcp_psh,tcp_rst,tcp_syn,tcp_fin,tcp_window,tcp_len,udp_len,udp_checksum
         
 
 # ###### TO-DO: before print the informations above, it will be interesting to add a few more information about the payload of the application =P
