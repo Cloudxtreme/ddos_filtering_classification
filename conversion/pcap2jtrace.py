@@ -46,7 +46,13 @@ for ts, buf in pcapfile:
     #FILTERING ONLY FOR IP
     if eth.type == dpkt.ethernet.ETH_TYPE_IP:
         ip = eth.data #Loading the content of the ethernet into a variable 'ip'
-        proto = ip.data #Loading the content of the 'ip' into a variable 'protocol' that can be for example ICMP, TCP, and UDP.
+        if ip.p == 1:
+            continue
+        
+        try: proto = ip.data #Loading the content of the 'ip' into a variable 'protocol' that can be for example ICMP, TCP, and UDP.
+        except:
+            continue
+        
         ts = ts #1
         ip_version = ip.v #2
         ip_header_length = ip.hl #3
@@ -54,83 +60,89 @@ for ts, buf in pcapfile:
         ip_total_length = ip.len #5
         ip_id = ip.id #6
         ip_flags = ip.opts #7
-        #ip_frag_offset = ip.off & dpkt.ip.IP_OFFMASK #8 this field was removed because the more_fragments are more meaningful
+        ip_frag_offset = ip.off & dpkt.ip.IP_OFFMASK #8 this field was removed because the more_fragments are more meaningful
         more_fragments = 1 if (int(ip.off & dpkt.ip.IP_MF)!= 0) else 0  #8 This flag is set to a 1 for all fragments except the last one
         ip_ttl = ip.ttl #9
         ip_proto = ip.p #10
         ip_checksum = ip.sum #11
         ip_src  = socket.inet_ntoa(ip.src) #12
         ip_dst  = socket.inet_ntoa(ip.dst) #13
+
+
         try: sport = proto.sport #14
         except: sport = "NONE"
         try: dport = proto.dport #15
         except: dport = "NONE"
+
+        try: proto_len = proto.ulen #32
+        except: proto_len = "NONE"
+        
+        tcp_flag =""
+        dns_answer = "NONE"
+        http_data = "NONE"
 
         if ip.p == 6 :
             try:
                 tcp_seq_id = (proto.flags if ip.p == 6 else 0) #16
                 tcp_ack_id = (proto.ack if ip.p == 6 else 0) #17
                 tcp_offset = (proto.off if ip.p == 6 else 0) #18
-                tcp_ns = (proto.seq if ip.p == 6 else 0) #19
-                tcp_cwr = (int(( proto.flags & dpkt.tcp.TH_CWR ) != 0) if ip.p == 6 else 0) #20
-                tcp_ece = (int(( proto.flags & dpkt.tcp.TH_ECE ) != 0) if ip.p == 6 else 0) #21
-                tcp_urg = (int(( proto.flags & dpkt.tcp.TH_URG ) != 0) if ip.p == 6 else 0) #22
-                tcp_ack = (int(( proto.flags & dpkt.tcp.TH_ACK ) != 0) if ip.p == 6 else 0) #23
-                tcp_psh = (int(( proto.flags & dpkt.tcp.TH_PUSH) != 0) if ip.p == 6 else 0) #24
-                tcp_rst = (int(( proto.flags & dpkt.tcp.TH_RST ) != 0) if ip.p == 6 else 0) #25
-                tcp_syn = (int(( proto.flags & dpkt.tcp.TH_SYN ) != 0) if ip.p == 6 else 0) #26
-                tcp_fin = (int(( proto.flags & dpkt.tcp.TH_FIN ) != 0) if ip.p == 6 else 0) #27
+                tcp_ns = (proto.seq if ip.p == 6 else 0) #19 
+                tcp_flag += ("CWR" if (int( proto.flags & dpkt.tcp.TH_CWR ) != 0) else ".") #20
+                tcp_flag += ("ECE" if (int( proto.flags & dpkt.tcp.TH_ECE ) != 0) else ".") #21
+                tcp_flag += ("URG" if (int( proto.flags & dpkt.tcp.TH_URG ) != 0) else ".") #22
+                tcp_flag += ("ACK" if (int( proto.flags & dpkt.tcp.TH_ACK ) != 0) else ".") #23
+                tcp_flag += ("PSH" if (int( proto.flags & dpkt.tcp.TH_PUSH) != 0) else ".") #24
+                tcp_flag += ("RST" if (int( proto.flags & dpkt.tcp.TH_RST ) != 0) else ".") #25
+                tcp_flag += ("SYN" if (int( proto.flags & dpkt.tcp.TH_SYN ) != 0) else ".") #26
+                tcp_flag += ("FIN" if (int( proto.flags & dpkt.tcp.TH_FIN ) != 0) else ".") #27
                 tcp_window = (proto.win if ip.p == 6 else 0) #28
                 tcp_len = (len(proto.data) if ip.p == 6 else 0) #29
                 udp_len = "NONE" #32
                 udp_checksum = "NONE" #33
             except:
                 print "EXCEPTION TCP"
+
+            if proto.dport == 80:
+                try: 
+                    http = dpkt.http.Request(proto.data)
+                    http_data = http.data
+                except: continue
+
+
         elif ip.p == 17:
-                tcp_seq_id = "NONE" #16
-                tcp_ack_id = "NONE" #17
-                tcp_offset = "NONE" #18
-                tcp_ns = "NONE" #19
-                tcp_cwr = "NONE" #20
-                tcp_ece = "NONE" #21
-                tcp_urg = "NONE" #22
-                tcp_ack = "NONE" #23
-                tcp_psh = "NONE" #24
-                tcp_rst = "NONE" #25
-                tcp_syn = "NONE" #26
-                tcp_fin = "NONE" #27
-                tcp_window = "NONE" #28
-                tcp_len = "NONE" #29
-                try: udp_len = proto.ulen #32
-                except: udp_len = "blah"
-                try: udp_checksum = proto.sum #33
-                except: udp_checksum = "NONE"
-        elif ip.p == 1:
             tcp_seq_id = "NONE" #16
             tcp_ack_id = "NONE" #17
             tcp_offset = "NONE" #18
             tcp_ns = "NONE" #19
-            tcp_cwr = "NONE" #20
-            tcp_ece = "NONE" #21
-            tcp_urg = "NONE" #22
-            tcp_ack = "NONE" #23
-            tcp_psh = "NONE" #24
-            tcp_rst = "NONE" #25
-            tcp_syn = "NONE" #26
-            tcp_fin = "NONE" #27
+            tcp_flag = "NONE" #20
             tcp_window = "NONE" #28
-            tcp_len = "NONE" #29
-            udp_len = "NONE" #32
+            try: udp_checksum = proto.sum #33
+            except: udp_checksum = "NONE"
+        
+            tcp_seq_id = "NONE" #16
+            tcp_ack_id = "NONE" #17
+            tcp_offset = "NONE" #18
+            tcp_ns = "NONE" #19
+            tcp_flag = "NONE" #20
+            tcp_window = "NONE" #28
             udp_checksum = proto.sum #33
 
-        print >> outputfile,ts,ip_version,ip_header_length,ip_tos,ip_total_length,ip_id,ip_flags,more_fragments,ip_ttl,ip_proto,ip_checksum,ip_src,ip_dst,sport,dport,tcp_seq_id,tcp_ack_id,tcp_offset,tcp_ns,tcp_cwr,tcp_ece,tcp_urg,tcp_ack,tcp_psh,tcp_rst,tcp_syn,tcp_fin,tcp_window,tcp_len,udp_len,udp_checksum
+            if proto.sport == 53:
+                try:
+                    dns = dpkt.dns.DNS(proto.data)
+                except:
+                    continue
+                if dns.qr != dpkt.dns.DNS_R:
+                    continue
+                if dns.opcode != dpkt.dns.DNS_QUERY:
+                    continue
+                if dns.rcode != dpkt.dns.DNS_RCODE_NOERR:
+                    continue
+                if len(dns.an) < 1:
+                    continue
+                for qname in dns.qd:
+                    dns_answer = qname.name
+
+        print >> outputfile,ts,ip_version,ip_header_length,ip_tos,ip_total_length,ip_id,ip_flags,more_fragments,ip_ttl,ip_proto,ip_checksum,ip_src,ip_dst,sport,dport,tcp_seq_id,tcp_ack_id,tcp_offset,tcp_ns,tcp_flag,tcp_window,proto_len,udp_checksum,dns_answer,http_data
         
-
-# ###### TO-DO: before print the informations above, it will be interesting to add a few more information about the payload of the application =P
-
-# In[6]:
-
-# if proto.dport == 80 and len(proto.data) > 0:
-#    http = dpkt.http.Request(proto.data)
-#    print http.len
 

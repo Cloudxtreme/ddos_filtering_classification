@@ -1,4 +1,4 @@
--- TO RUN: pig -x local -f pcap_ddos_analysis.pig -p inputfile='../conversion/output/<FILE_NAME>'
+-- TO RUN: pig -x local -f 0_load_converted_data.pig -p inputfile='../conversion/output/BOOTIO-CHARGEN-S-02_2015-03-26_15%3A21%3A36.txt'
 
 -- =========================================================
 -- DEFINING CONSTANTS
@@ -23,7 +23,6 @@ pcap = LOAD '$inputfile' using PigStorage(' ') AS (
     ip_total_length:int, --5
     ip_id:int, --6
     ip_flags:int, --7
-    --ip_frag_offset:int, -- 8 This field was substituted (from the packetpig) for the ip_more_fragments (bellow)
     ip_more_fragments:int, --8 
     ip_ttl:int, --9
     ip_proto:int, --10
@@ -38,19 +37,16 @@ pcap = LOAD '$inputfile' using PigStorage(' ') AS (
     tcp_ack_id:chararray , --17
     tcp_offset:chararray , --18
     tcp_ns:chararray ,-- 19 
-    tcp_cwr:chararray , --20
-    tcp_ece:chararray , --21
-    tcp_urg:chararray , --22
-    tcp_ack:chararray , --23
-    tcp_psh:chararray , --24
-    tcp_rst:chararray , --25
-    tcp_syn:chararray , --26
-    tcp_fin:chararray , --27
-    tcp_window:chararray , --28
-    tcp_len:chararray , --29
+    tcp_flag:chararray , --20
+    tcp_window:chararray , --21
     --
-    udp_len:chararray , --32
-    udp_checksum:chararray --33
+    proto_len:chararray , --22
+    --
+    udp_checksum:chararray, --23
+    --
+    dns_answer:chararray, --24
+    http_data:chararray --25
+    
 );
 
 IMPORT '1_distr_srcips_per_dstip.pig';
