@@ -1,6 +1,13 @@
 Attack type pseudocode
 ------------
 
+<pre><code>procedure **AttackType(input,output)** 
+  if ip_protocol = “TCP” then
+    if http_type_top1 != “NONE” then
+      if http_type_top1% > upper_threshold then
+        attack_type := dport_top1
+</code></pre>
+
 ~~~
 **input:** attack_summary[],upper_threshold, lower_threshold
 **output:** attack_type
