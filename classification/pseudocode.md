@@ -1,4 +1,6 @@
-== Attack type pseudocode == 
+An h2 header
+------------
+
 ~~~
 in: attack_summary[] in: up_threshold
 in: lw_threshold
