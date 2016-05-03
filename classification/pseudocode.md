@@ -1,3 +1,4 @@
+== Attack type pseudocode == 
 ~~~
 in: attack_summary[] in: up_threshold
 in: lw_threshold
