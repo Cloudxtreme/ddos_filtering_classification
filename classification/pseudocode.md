@@ -1,6 +1,6 @@
 ### Attack type pseudocode ###
 
-The **AttackType()** procedure receives as input: (i) an `attack summary table`, (ii) an `upper threshold`, and (iii) a `lower threshold`. Overall, the attack type can be: TCP-based (line 2), UDP-based (line 18), or any other IP protocol based (line 27). It depends on the value of the `attack_summary[ip_protocol]` which is one of the outputs of the `Processing Module`. If it is a TCP-based attack, then it checks if exists a `attack_summary[http_type_top1]`. If doesn't exist it means that the attack is not HTTP based, but any other 
+The **AttackType()** procedure receives as input: (i) an `attack summary table`, (ii) an `upper threshold`, and (iii) a `lower threshold`. Overall, the attack type can be: TCP-based (line 2), UDP-based (line 18), or any other IP protocol based (line 27). It depends on the value of the `attack_summary[ip_protocol]` which is one of the outputs of the `Processing Module`. If it is a TCP-based attack, then it checks if exists a HTTP type (e.g., POST, GET) `attack_summary[http_type_top1]`. If positive then it checks if the percentage of top 1 HTTP type (`attack_summary[http_type_top1%]`) is part of the majority of network records (`upper_threshold`). If positive, it means that it correspond to a HTTP or HTTPS attack (`attack_summary[dport_top1]`). If negative and the percentage of top 1 HTTP type is in between the `lower_threshold` and the `upper_threshold` then it means that the top1
 
 ~~~
 input: attack_summary[],upper_threshold, lower_threshold
