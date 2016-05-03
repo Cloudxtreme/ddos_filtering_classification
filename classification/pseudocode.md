@@ -3,9 +3,9 @@
 input: attack_summary[],upper_threshold, lower_threshold
 output: attack_type
 
-procedure AttackType(input,output)
-  if ip_protocol = “TCP” then
-    if http_type_top1 != “NONE” then
+1:procedure AttackType(input,output)
+2:  if ip_protocol = “TCP” then
+3:    if http_type_top1 != “NONE” then
       if http_type_top1% > upper_threshold then
         attack_type := dport_top1
         else if http_type_top1% > lower_threshold then
