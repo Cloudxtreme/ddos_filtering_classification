@@ -1,6 +1,4 @@
-Attack type pseudocode
-## An h3 header ##
-
+### Attack type pseudocode ###
 ~~~
 input: attack_summary[],upper_threshold, lower_threshold
 output: attack_type
@@ -35,6 +33,22 @@ procedure AttackType(input,output)
 end procedure
 ~~~
 
+### IP Fragmentation Attack pseudocode ###
+
+~~~
+input: attack_summary[], threshold_#sip_frag 
+output: fragmentation?
+
+procedure Fragmentation?(input,output)
+  if #sip_f rag_marked > threshold_#sip_f rag then
+    fragmentation? := “Y” 
+    else
+      fragmentation? := “N” 
+  end if
+end procedure
+~~~
+
+### IP Spoofing Attack pseudocode ###
 ~~~
 input: attack_summary[], in: threshold_sip_restricted, threshold_ttl_ > 4
 output: spoofed?
@@ -48,4 +62,16 @@ procedure Spoofed?(input,output)
 end procedure
 ~~~
 
+### Reflection Attack pseudocode ###
+~~~
+input: attack_summary[], threshold_sport_%, threshold_#dport 
+output: reflection?
 
+procedure Reflection?(input,output)
+  if (spoofed? = “N”) and (sport_top1_% >threshold_sport_%) and (#dport_distinct > threshold_#dport) then
+    reflection? := “Y” 
+    else
+      reflection? := “N” 
+  end if
+end procedure
+~~~
