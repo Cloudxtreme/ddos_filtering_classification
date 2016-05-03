@@ -2,31 +2,30 @@ An h2 header
 ------------
 
 ~~~
-in: attack_summary[] in: up_threshold
-in: lw_threshold
-out: attack_type
+input: attack_summary[],upper_threshold, lower_threshold
+output: attack_type
 
 procedure AttackType(input,output) 
   if ip_protocol = “TCP” then
     if http_type_top1 != “NONE” then
-      if http_type_top1% > up_threshold then
+      if http_type_top1% > upper_threshold then
         attack_type := dport_top1
-        else if http_type_top1% > lw_threshold then
+        else if http_type_top1% > lower_threshold then
           attack_type := dport_top1 “+” end if
         else if tcp_flag_top1 != “NONE” then
-          if tcp_flag_top1% > up_threshold then
+          if tcp_flag_top1% > upper_threshold then
             attack_type := ip_proto tcp_flag_top1 
             else 
-              if tcp_flag_top1% > lw_threshold then 
+              if tcp_flag_top1% > lower_threshold then 
                 attack_type := ip_proto tcp_f lag_top1
                 else
                   attack_type := ip_proto “multiple ports” 
         end if
       end if
     else if ip_protocol = “UDP” then
-        if sport_top1% > up_threshold then 
+        if sport_top1% > upper_threshold then 
           attack_type := sport_top1
-          else if sport_top1% > lw_threshold then 
+          else if sport_top1% > lower_threshold then 
             attack_type := sport_top1 “+”
           else
             attack_type := ip_proto “multiple ports” end if
